@@ -120,15 +120,8 @@ void task_bme280_normal_mode(void *ignore) {
                                            .filter = BME280_FILTER_COEFF_16,
                                            .standby_time = BME280_STANDBY_TIME_0_5_MS}};
 
-  // #define BME280_E_NULL_PTR                 INT8_C(-1)
-  // #define BME280_E_DEV_NOT_FOUND            INT8_C(-2)
-  // #define BME280_E_INVALID_LEN              INT8_C(-3)
-  // #define BME280_E_COMM_FAIL                INT8_C(-4)
-  // #define BME280_E_SLEEP_MODE_FAIL          INT8_C(-5)
-  // #define BME280_E_NVM_COPY_FAILED          INT8_C(-6)
-
   int8_t result;
-  //  *  @retval zero -> Success / +ve value -> Warning / -ve value -> Error
+
   result = bme280_init(&bme280);
   if (result == BME280_OK) {
     ESP_LOGI(TAG_BME280, "Successfully initialized BME280!");
@@ -155,22 +148,35 @@ void task_bme280_normal_mode(void *ignore) {
         ESP_LOGE(TAG_BME280, "BME280 initialization error: NVM_COPY_FAILED (%d)", result);
         break;
     }
+    return;
   }
 
   result = bme280_set_sensor_mode(BME280_NORMAL_MODE, &bme280);
   if (result == BME280_OK) {
+    ESP_LOGI(TAG_BME280, "Successfully set sensor mode to 'normal'");
   } else {
     ESP_LOGE(TAG_BME280, "Unsuccessful setting sensor mode. Result: %d", result);
+    return;
   }
 
-  int32_t com_rslt;
+  while (true) {
+    vTaskDelay(40 / portTICK_PERIOD_MS);
+
+    struct bme280_data data;
+    result = bme280_get_sensor_data(BME280_ALL, &data, &bme280);
+    if (result == BME280_OK) {
+      ESP_LOGI(TAG_BME280, "Successfully read BME280 data!");
+    } else if (result > 0) {
+      ESP_LOGW(TAG_BME280, "BME280 get sensor data warning: %d", result);
+    } else {
+      ESP_LOGE(TAG_BME280, "BME@*) got sensor data error: %d", result);
+    }
+  }
+
   int32_t v_uncomp_pressure_int32_t;
   int32_t v_uncomp_temperature_int32_t;
   int32_t v_uncomp_humidity_int32_t;
 
-  //   com_rslt = bme280_init(&bme280);
-
-  //   com_rslt += bme280_set_power_mode(BME280_NORMAL_MODE);
   //   if (com_rslt == SUCCESS) {
   //     while (true) {
   //       vTaskDelay(40 / portTICK_PERIOD_MS);

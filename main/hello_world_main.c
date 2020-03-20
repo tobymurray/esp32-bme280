@@ -165,7 +165,6 @@ void task_bme280_normal_mode(void *ignore) {
     struct bme280_data data;
     result = bme280_get_sensor_data(BME280_ALL, &data, &bme280);
     if (result == BME280_OK) {
-      ESP_LOGI(TAG_BME280, "Successfully read BME280 data!");
       ESP_LOGI(TAG_BME280, "%.2f degC / %.3f hPa / %.3f %%", data.temperature,
                data.pressure / 100,  // Pa -> hPa
                data.humidity);

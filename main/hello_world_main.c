@@ -166,6 +166,9 @@ void task_bme280_normal_mode(void *ignore) {
     result = bme280_get_sensor_data(BME280_ALL, &data, &bme280);
     if (result == BME280_OK) {
       ESP_LOGI(TAG_BME280, "Successfully read BME280 data!");
+      ESP_LOGI(TAG_BME280, "%.2f degC / %.3f hPa / %.3f %%", data.temperature,
+               data.pressure / 100,  // Pa -> hPa
+               data.humidity);
     } else if (result > 0) {
       ESP_LOGW(TAG_BME280, "BME280 get sensor data warning: %d", result);
     } else {

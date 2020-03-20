@@ -29,6 +29,7 @@ void i2c_master_init() {
                              .sda_pullup_en = GPIO_PULLUP_ENABLE,
                              .scl_pullup_en = GPIO_PULLUP_ENABLE,
                              .master.clk_speed = 1000000};
+
   i2c_param_config(I2C_NUM_0, &i2c_config);
   i2c_driver_install(I2C_NUM_0, I2C_MODE_MASTER, 0, 0, 0);
 }
@@ -134,7 +135,26 @@ void task_bme280_normal_mode(void *ignore) {
   } else if (result > 0) {
     ESP_LOGW(TAG_BME280, "BME280 initialization warning: %d", result);
   } else {
-    ESP_LOGE(TAG_BME280, "BME280 initialization error: %d", result);
+    switch (result) {
+      case BME280_E_NULL_PTR:
+        ESP_LOGE(TAG_BME280, "BME280 initialization error: NULL_PTR (%d)", result);
+        break;
+      case BME280_E_DEV_NOT_FOUND:
+        ESP_LOGE(TAG_BME280, "BME280 initialization error: BME280_E_DEV_NOT_FOUND (%d)", result);
+        break;
+      case BME280_E_INVALID_LEN:
+        ESP_LOGE(TAG_BME280, "BME280 initialization error: BME280_E_INVALID_LEN (%d)", result);
+        break;
+      case BME280_E_COMM_FAIL:
+        ESP_LOGE(TAG_BME280, "BME280 initialization error: BME280_E_COMM_FAIL (%d)", result);
+        break;
+      case BME280_E_SLEEP_MODE_FAIL:
+        ESP_LOGE(TAG_BME280, "BME280 initialization error: BME280_E_SLEEP_MODE_FAIL (%d)", result);
+        break;
+      case BME280_E_NVM_COPY_FAILED:
+        ESP_LOGE(TAG_BME280, "BME280 initialization error: NVM_COPY_FAILED (%d)", result);
+        break;
+    }
   }
 
   result = bme280_set_sensor_mode(BME280_NORMAL_MODE, &bme280);

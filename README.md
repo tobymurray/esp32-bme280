@@ -1,5 +1,1 @@
-# Hello World Example
-
-Starts a FreeRTOS task to print "Hello World"
-
-See the README.md file in the upper level 'examples' directory for more information about examples.
+Trying to figure out why the BME280 isn't working for me. Asked [here](https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BME280-over-I2C-driver-v3-4-3-ESP32-readings-not-changing/m-p/12046#M2624), we'll see if anything comes up.
